@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/components/custom_button.dart';
 import 'package:fms_flutter/screens/login/login_screen.dart';
+import 'package:fms_flutter/screens/register/register_screen.dart';
 import 'package:fms_flutter/screens/welcome/components/background.dart';
 
 class Body extends StatelessWidget {
@@ -30,7 +31,7 @@ class Body extends StatelessWidget {
               textColor: Colors.black,
               press: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const LoginScreen();
+                  return LoginScreen();
                 }));
               }),
           const SizedBox(height: 30),
@@ -38,7 +39,11 @@ class Body extends StatelessWidget {
               text: "Register",
               color: Colors.white,
               textColor: Colors.black,
-              press: () {})
+              press: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const RegisterScreen();
+                }));
+              })
         ],
       ),
     ));

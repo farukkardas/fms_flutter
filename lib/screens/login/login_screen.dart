@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/screens/login/components/body.dart';
 
-class LoginScreen extends StatelessWidget {
+
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Body(),
-    );
+  State<StatefulWidget> createState() {
+    return Body();
   }
 }
 
