@@ -11,7 +11,6 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size; // Total height and width
     return Background(
         child: SingleChildScrollView(
       child: Column(
@@ -31,7 +30,7 @@ class Body extends StatelessWidget {
               textColor: Colors.black,
               press: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return LoginScreen();
+                  return const LoginScreen();
                 }));
               }),
           const SizedBox(height: 30),

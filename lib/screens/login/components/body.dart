@@ -1,15 +1,10 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fms_flutter/components/already_have_an_account.dart';
 import 'package:fms_flutter/components/custom_button.dart';
 import 'package:fms_flutter/components/rounded_input_field.dart';
 import 'package:fms_flutter/components/rounded_password_field.dart';
-import 'package:fms_flutter/models/auth/login.dart';
-import 'package:fms_flutter/models/auth/token_model.dart';
-import 'package:fms_flutter/models/response_models/single_response_model.dart';
+import 'package:fms_flutter/guards/auth_guard.dart';
 import 'package:fms_flutter/screens/homepage/homepage.dart';
 import 'package:fms_flutter/screens/register/register_screen.dart';
 import 'package:fms_flutter/services/auth_service.dart';
@@ -17,6 +12,7 @@ import 'package:fms_flutter/services/auth_service.dart';
 class Body extends State {
   Future<String>? response;
   String? message;
+  late bool isAuth;
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +20,24 @@ class Body extends State {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
 
+    Future.delayed(
+        Duration.zero,
+        () => AuthGuard().checkIfLogged().then((value) => {
+              isAuth = value,print(isAuth),
+              if (isAuth == false)
+                {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const Homepage();
+                  }), (route) => false)
+                }
+            }));
     FutureOr Function()? returnHomePage() {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const Homepage();
-      }));
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Homepage()),
+        (Route<dynamic> route) => false,
+      );
     }
 
     loginAccount() async {
@@ -99,7 +109,7 @@ class Body extends State {
                 color: Colors.black,
                 textColor: Colors.white,
                 press: () {
-                 loginAccount();
+                  loginAccount();
                 },
               ),
               const SizedBox(height: 15),

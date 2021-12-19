@@ -1,7 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:core';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
-import 'package:fms_flutter/models/auth/login.dart';
-import 'package:fms_flutter/screens/login/login_screen.dart';
+import 'package:fms_flutter/guards/auth_guard.dart';
+import 'package:fms_flutter/screens/profile/profile.dart';
+import 'package:fms_flutter/screens/welcome/welcome_screen.dart';
+import 'package:fms_flutter/services/auth_service.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
@@ -14,20 +17,17 @@ class _HomePageState extends State<Homepage> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
+  static final List<Widget> _widgetOptions = <Widget>[
+    ProfilePage(),
+    const Text(
       'Index 1: Business',
       style: optionStyle,
     ),
-    Text(
+    const Text(
       'Index 2: School',
       style: optionStyle,
     ),
-    Text(
+    const Text(
       'Index 3: Settings',
       style: optionStyle,
     ),
@@ -39,19 +39,40 @@ class _HomePageState extends State<Homepage> {
     });
   }
 
+  bool isAuth = false;
+
   @override
   Widget build(BuildContext context) {
+    Future.delayed(
+        Duration.zero,
+        () => AuthGuard().checkUserAuth().then((value) => {
+              isAuth = value,
+              if (isAuth == false)
+                {
+                  AuthService().logout(),
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const WelcomeScreen();
+                  }), (route) => false)
+                }
+            }));
+
     return WillPopScope(
       onWillPop: () async {
-        return false;
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
           title: const Text('BottomNavigationBar Sample'),
         ),
-        body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+        body: DoubleBackToCloseApp(
+          snackBar: const SnackBar(
+            content: Text("Tap back again to exit app"),
+          ),
+          child: Center(
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[

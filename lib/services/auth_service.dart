@@ -1,22 +1,16 @@
 import 'dart:convert';
-import 'dart:math';
-
+import 'dart:html';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fms_flutter/models/auth/login.dart';
-import 'package:fms_flutter/models/auth/token_model.dart';
-import 'package:fms_flutter/models/response_models/response_model.dart';
-import 'package:fms_flutter/models/response_models/single_response_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  Uri apiUrl = Uri.parse('http://localhost:5000/api/auth/login');
+  Uri loginUrl = Uri.parse('http://localhost:5000/api/auth/login');
+  Uri checkSkUrl = Uri.parse('http://localhost:5000/api/auth/checkskoutdated');
 
-
-  Future<String> login(
-      {TextEditingController? emailController,
-      TextEditingController? passwordController}) async {
-    final response = await http.post(apiUrl,
+  Future<String> login({TextEditingController? emailController,
+    TextEditingController? passwordController}) async {
+    final response = await http.post(loginUrl,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -27,7 +21,7 @@ class AuthService {
 
     switch (response.statusCode) {
       case 200:
-        const _storage = FlutterSecureStorage();
+        SharedPreferences pref = await SharedPreferences.getInstance();
         //First parse JSON
         final jsonArray = json.decode(response.body);
         //Parse JSON Data
@@ -37,17 +31,15 @@ class AuthService {
 
         // set role in storage
         for (var element in jsonRole) {
-          _storage.write(key: "role", value: (element['name']));
+          pref.setString("role", element['name']);
         }
 
-        // set values in flutter storage
-        _storage.write(key: "jwt", value: jsonData['token'].toString());
-        _storage.write(
-            key: "expiration", value: jsonData['expiration'].toString());
-        _storage.write(
-            key: "securityKey", value: jsonData[' securityKey'].toString());
-        _storage.write(key: "id", value: jsonData['id'].toString());
-
+        // set values in sharedprefs
+        pref.setString("jwt", jsonData['token'].toString());
+        pref.setString("expiration", jsonData['expiration'].toString());
+      //  pref.setString("securityKey", jsonData['securityKey'].toString());
+        pref.setString("id", jsonData['id'].toString());
+        pref.setBool("isAuth", true);
         return "Successfully logged!";
 
       case 400:
@@ -64,4 +56,19 @@ class AuthService {
         return "Server is under maintenance or closed!";
     }
   }
+
+  Future<dynamic> postData(Map<String, String> body) async {
+    return HttpRequest.postFormData(checkSkUrl.toString(), body)
+        .then((HttpRequest resp) {
+      return json.decode(resp.response);
+    }).catchError((error ,stackTrace) {
+      logout();
+    });
+  }
+
+  logout() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.clear();
+  }
+
 }
