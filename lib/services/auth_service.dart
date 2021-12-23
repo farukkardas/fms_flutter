@@ -1,23 +1,23 @@
 import 'dart:convert';
-import 'dart:html';
-import 'package:flutter/cupertino.dart';
+import 'package:fms_flutter/models/auth/login.dart';
+import 'package:fms_flutter/models/auth/register_model.dart';
+import 'package:fms_flutter/models/response_models/response_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 
 class AuthService {
   Uri loginUrl = Uri.parse('http://localhost:5000/api/auth/login');
+  Uri registerUrl = Uri.parse('http://localhost:5000/api/auth/register');
   Uri checkSkUrl = Uri.parse('http://localhost:5000/api/auth/checkskoutdated');
 
-  Future<String> login({TextEditingController? emailController,
-    TextEditingController? passwordController}) async {
+  Future<ResponseModel> login({loginModel = Login}) async {
+    ResponseModel model = ResponseModel();
     final response = await http.post(loginUrl,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String?, String?>{
-          "email": emailController?.text,
-          "password": passwordController?.text
-        }));
+        body: jsonEncode(loginModel));
 
     switch (response.statusCode) {
       case 200:
@@ -37,38 +37,109 @@ class AuthService {
         // set values in sharedprefs
         pref.setString("jwt", jsonData['token'].toString());
         pref.setString("expiration", jsonData['expiration'].toString());
-      //  pref.setString("securityKey", jsonData['securityKey'].toString());
+        pref.setString("securityKey", jsonData['securityKey'].toString());
         pref.setString("id", jsonData['id'].toString());
         pref.setBool("isAuth", true);
-        return "Successfully logged!";
+        model.message = jsonArray['message'];
+        model.success = true;
+        return model;
 
       case 400:
         final jsonArray = json.decode(response.body);
         String message = jsonArray['message'];
-        return message;
+        model.message = message;
+        model.success = false;
+        return model;
       case 401:
-        return "Response 403";
+        final jsonArray = json.decode(response.body);
+        model.message = jsonArray['message'];
+        model.success = false;
+        return model;
       case 403:
-        return "Response 403";
+        final jsonArray = json.decode(response.body);
+        model.message = jsonArray['message'];
+        model.success = false;
+        return model;
       case 500:
-        return "Internal server error!";
+        final jsonArray = json.decode(response.body);
+        model.message = jsonArray['message'];
+        model.success = false;
+        return model;
       default:
-        return "Server is under maintenance or closed!";
+        final jsonArray = json.decode(response.body);
+        model.message = jsonArray['message'];
+        model.success = false;
+        return model;
+    }
+  }
+
+  Future<ResponseModel> register({registerModel = RegisterModel}) async {
+    ResponseModel model = ResponseModel();
+    final response = await http.post(registerUrl,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(registerModel));
+
+    switch (response.statusCode) {
+      case 200:
+        final jsonArray = json.decode(utf8.decode(response.bodyBytes));
+        model.message = await jsonArray["message"];
+        model.success = true;
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        //First parse JSON
+        final registerJsonArray = json.decode(response.body);
+        //Parse JSON Data
+        final jsonData = registerJsonArray['data'] as Map;
+        //Operation Claims
+        final jsonRole = jsonData['operationClaims'] as List;
+
+        for (var element in jsonRole) {
+          pref.setString("role", element['name']);
+        }
+
+        pref.setString("jwt", jsonData['token'].toString());
+        pref.setString("expiration", jsonData['expiration'].toString());
+        pref.setString("securityKey", jsonData['securityKey'].toString());
+        pref.setString("id", jsonData['id'].toString());
+        pref.setBool("isAuth", true);
+
+        return model;
+      case 400:
+        final jsonArray = json.decode(utf8.decode(response.bodyBytes));
+        final errors = jsonArray['Errors'];
+        final errorMessages = [];
+        String errorMessage = "";
+        for (final i in errors) {
+          errorMessages.add(i["ErrorMessage"]);
+        }
+
+        for (final i in errorMessages) {
+          errorMessage = i;
+        }
+        model.success = false;
+        model.message = errorMessage;
+        return model;
+      case 500:
+        model.success = false;
+        return model;
+      default:
+        model.success = false;
+        return model;
     }
   }
 
   Future<dynamic> postData(Map<String, String> body) async {
-    return HttpRequest.postFormData(checkSkUrl.toString(), body)
-        .then((HttpRequest resp) {
-      return json.decode(resp.response);
-    }).catchError((error ,stackTrace) {
-      logout();
-    });
+    var formData = FormData.fromMap(body);
+    var dio = Dio();
+
+    var response = await dio.post(checkSkUrl.toString(), data: formData);
+
+    return response;
   }
 
   logout() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.clear();
   }
-
 }

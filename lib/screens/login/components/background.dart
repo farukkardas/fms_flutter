@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Background extends StatelessWidget {
+class Background extends StatefulWidget {
   final Widget? child;
   const Background({
     Key? key,
@@ -8,8 +8,12 @@ class Background extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<Background> createState() => _BackgroundState();
+}
+
+class _BackgroundState extends State<Background> {
+  @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Container(
       decoration: const BoxDecoration(
           image: DecorationImage(

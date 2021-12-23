@@ -5,25 +5,27 @@ import 'package:fms_flutter/components/custom_button.dart';
 import 'package:fms_flutter/components/rounded_input_field.dart';
 import 'package:fms_flutter/components/rounded_password_field.dart';
 import 'package:fms_flutter/guards/auth_guard.dart';
+import 'package:fms_flutter/models/auth/login.dart';
 import 'package:fms_flutter/screens/homepage/homepage.dart';
+import 'package:fms_flutter/screens/login/login_screen.dart';
 import 'package:fms_flutter/screens/register/register_screen.dart';
 import 'package:fms_flutter/services/auth_service.dart';
 
-class Body extends State {
+class Body extends State<LoginScreen> {
   Future<String>? response;
   String? message;
   late bool isAuth;
+  var formKey = GlobalKey<FormState>();
+  Login loginModel = Login();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    var emailController = TextEditingController();
-    var passwordController = TextEditingController();
 
     Future.delayed(
         Duration.zero,
         () => AuthGuard().checkIfLogged().then((value) => {
-              isAuth = value,print(isAuth),
+              isAuth = value,
               if (isAuth == false)
                 {
                   Navigator.pushAndRemoveUntil(context,
@@ -42,37 +44,34 @@ class Body extends State {
 
     loginAccount() async {
       AuthService authService = AuthService();
-
-      authService
-          .login(
-              emailController: emailController,
-              passwordController: passwordController)
-          .then((result) => {
-                setState(() {
-                  message = result.toString();
-                  // if success
-                  if (message!.contains("Successfully")) {
-                    final snackBar = SnackBar(
-                        backgroundColor: Colors.green,
-                        content: Text(
-                          message!,
-                          textAlign: TextAlign.center,
-                        ));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    // Return homepage after 2 sec
-                    var timer = Timer(
-                        const Duration(seconds: 2), () => returnHomePage());
-                  } else {
-                    final snackBar = SnackBar(
-                        backgroundColor: Colors.red,
-                        content: Text(
-                          message!,
-                          textAlign: TextAlign.center,
-                        ));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  }
-                })
-              });
+      authService.login(loginModel: loginModel).then((result) => {
+            setState(() {
+              print(result.success);
+              // if success
+              if (result.success == true) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                final snackBar = SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text(
+                      result.message!,
+                      textAlign: TextAlign.center,
+                    ));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                // Return homepage after 2 sec
+                var timer =
+                    Timer(const Duration(seconds: 2), () => returnHomePage());
+              } else if (result.success == false) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                final snackBar = SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text(
+                      result.message!,
+                      textAlign: TextAlign.center,
+                    ));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            })
+          });
     }
 
     return Scaffold(
@@ -84,47 +83,75 @@ class Body extends State {
                 image: AssetImage("assets/images/background.jpg"),
                 fit: BoxFit.fill)),
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const SizedBox(height: 80),
-              const Text(
-                "LOGIN",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
-              ),
-              SizedBox(height: size.height * 0.03),
-              const Image(image: AssetImage("assets/images/sheep.png")),
-              RoundedInputField(
-                textEditingController: emailController,
-                hintText: "Email..",
-                icon: Icons.person,
-                onChanged: (value) {},
-              ),
-              RoundedPassword(
-                  textEditingController: passwordController,
-                  onChanged: (value) {}),
-              const SizedBox(height: 5),
-              CustomButton(
-                text: "Login",
-                color: Colors.black,
-                textColor: Colors.white,
-                press: () {
-                  loginAccount();
-                },
-              ),
-              const SizedBox(height: 15),
-              AlreadyHaveAccountField(
-                  login: true,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(height: 80),
+                const Text(
+                  "LOGIN",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                ),
+                SizedBox(height: size.height * 0.03),
+                const Image(image: AssetImage("assets/images/sheep.png")),
+                buildRoundedInputField(),
+                buildRoundedPassword(),
+                const SizedBox(height: 5),
+                CustomButton(
+                  text: "Login",
+                  color: Colors.black,
+                  textColor: Colors.white,
                   press: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const RegisterScreen();
-                    }));
-                  })
-            ],
+                    if (!formKey.currentState!.validate()) {
+                      return;
+                    }
+                    formKey.currentState?.save();
+                    loginAccount();
+                  },
+                ),
+                const SizedBox(height: 15),
+                AlreadyHaveAccountField(
+                    login: true,
+                    press: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const RegisterScreen();
+                      }));
+                    })
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildRoundedPassword() {
+    return RoundedPassword(validator: (value) {
+      if (value == null || value.isEmpty) {
+        return message = "Password input can't be empty!";
+      }
+    }, onSaved: (value) async {
+      loginModel.password = value;
+    });
+  }
+
+  Widget buildRoundedInputField() {
+    return RoundedInputField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return message = "Email input can't be empty!";
+        }
+        else if (!value.contains("@")){
+          return message = "This is not valid email!";
+        }
+      },
+      hintText: "Email..",
+      icon: Icons.person,
+      onSaved: (value) async {
+        loginModel.email = value;
+      },
     );
   }
 }

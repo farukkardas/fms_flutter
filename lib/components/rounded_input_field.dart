@@ -4,20 +4,28 @@ import 'package:fms_flutter/components/text_field_container.dart';
 class RoundedInputField extends StatelessWidget {
   final String? hintText;
   final IconData? icon;
-  final ValueChanged<String>? onChanged;
+  final Function(String?) onSaved;
   final TextEditingController? textEditingController;
-  const RoundedInputField({Key? key, this.hintText, this.icon, this.onChanged, this.textEditingController})
+  final validator;
+
+
+  const RoundedInputField(
+      {Key? key,
+      this.hintText,
+      this.icon,
+      required this.onSaved,
+      this.textEditingController, this.validator,})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
-        child: TextField(controller:textEditingController ,
-            onChanged: onChanged,
+        child: TextFormField(validator: validator,
+            onSaved: onSaved,
             decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hintText,
-                constraints: BoxConstraints.tight(const Size(0, 40)),
+                //constraints: BoxConstraints.tight(const Size(0, 40)),
                 icon: Icon(
                   icon,
                   color: Colors.black,

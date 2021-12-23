@@ -18,7 +18,6 @@ class _HomePageState extends State<Homepage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    ProfilePage(),
     const Text(
       'Index 1: Business',
       style: optionStyle,
@@ -27,10 +26,7 @@ class _HomePageState extends State<Homepage> {
       'Index 2: School',
       style: optionStyle,
     ),
-    const Text(
-      'Index 3: Settings',
-      style: optionStyle,
-    ),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -62,10 +58,6 @@ class _HomePageState extends State<Homepage> {
         return true;
       },
       child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          title: const Text('BottomNavigationBar Sample'),
-        ),
         body: DoubleBackToCloseApp(
           snackBar: const SnackBar(
             content: Text("Tap back again to exit app"),
@@ -78,22 +70,17 @@ class _HomePageState extends State<Homepage> {
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'Home',
+              label: 'Products',
               backgroundColor: Colors.red,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Business',
+              icon: Icon(Icons.add_shopping_cart),
+              label: 'Basket',
               backgroundColor: Colors.green,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School',
-              backgroundColor: Colors.purple,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
+              icon: Icon(Icons.account_circle_outlined),
+              label: 'Profile',
               backgroundColor: Colors.pink,
             ),
           ],
