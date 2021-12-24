@@ -2,6 +2,7 @@ import 'dart:core';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/guards/auth_guard.dart';
+import 'package:fms_flutter/screens/buy_products/buy_product.dart';
 import 'package:fms_flutter/screens/profile/profile.dart';
 import 'package:fms_flutter/screens/welcome/welcome_screen.dart';
 import 'package:fms_flutter/services/auth_service.dart';
@@ -18,10 +19,7 @@ class _HomePageState extends State<Homepage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    const Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
+    BuyProduct(),
     const Text(
       'Index 2: School',
       style: optionStyle,

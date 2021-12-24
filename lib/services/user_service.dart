@@ -19,7 +19,7 @@ class UserService {
     });
 
     final parsedJson = await json.decode(response.body)['data'];
-    userDetail =  UserDetail.fromJson(parsedJson);
+    userDetail = UserDetail.fromJson(parsedJson);
 
     return userDetail;
   }
