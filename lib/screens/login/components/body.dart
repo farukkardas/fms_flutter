@@ -45,32 +45,33 @@ class Body extends State<LoginScreen> {
     loginAccount() async {
       AuthService authService = AuthService();
       authService.login(loginModel: loginModel).then((result) => {
-            setState(() {
-              print(result.success);
-              // if success
-              if (result.success == true) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                final snackBar = SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text(
-                      result.message!,
-                      textAlign: TextAlign.center,
-                    ));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                // Return homepage after 2 sec
-                var timer =
-                    Timer(const Duration(seconds: 2), () => returnHomePage());
-              } else if (result.success == false) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                final snackBar = SnackBar(
-                    backgroundColor: Colors.red,
-                    content: Text(
-                      result.message!,
-                      textAlign: TextAlign.center,
-                    ));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            if (mounted)
+              {
+                setState(() {
+                  print(result.success);
+                  // if success
+                  if (result.success == true) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    final snackBar = SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text(
+                          result.message!,
+                          textAlign: TextAlign.center,
+                        ));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    // Return homepage after 2 sec
+                  } else if (result.success == false) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    final snackBar = SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text(
+                          result.message!,
+                          textAlign: TextAlign.center,
+                        ));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
+                })
               }
-            })
           });
     }
 
@@ -142,8 +143,7 @@ class Body extends State<LoginScreen> {
       validator: (value) {
         if (value == null || value.isEmpty) {
           return message = "Email input can't be empty!";
-        }
-        else if (!value.contains("@")){
+        } else if (!value.contains("@")) {
           return message = "This is not valid email!";
         }
       },

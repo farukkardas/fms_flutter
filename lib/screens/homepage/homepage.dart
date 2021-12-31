@@ -19,7 +19,7 @@ class _HomePageState extends State<Homepage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
-    BuyProduct(),
+    const BuyProduct(),
     const Text(
       'Index 2: School',
       style: optionStyle,
@@ -28,9 +28,13 @@ class _HomePageState extends State<Homepage> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+
+    if(mounted){
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
   }
 
   bool isAuth = false;

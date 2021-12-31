@@ -29,9 +29,6 @@ class ProductService {
     }
     products.data = productList;
 
-    for(final i in productList){
-      print(i.name);
-    }
     return products;
   }
 }

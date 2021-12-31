@@ -28,31 +28,31 @@ class Body extends State<RegisterScreen> {
 
   registerAccount() async {
     AuthService authService = AuthService();
-    authService
-        .register(registerModel: registerModel)
-        .then((result) => setState(() {
-              if (result.message!.contains("Successfully")) {
-                final snackBar = SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text(
-                      result.message!,
-                      textAlign: TextAlign.center,
-                    ));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                // Return homepage after 2 sec
-                var timer =
-                    Timer(const Duration(seconds: 2), () => returnHomePage());
-              } else {
-                print(result.message);
-                final snackBar = SnackBar(
-                    backgroundColor: Colors.red,
-                    content: Text(
-                      result.message!,
-                      textAlign: TextAlign.center,
-                    ));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-            }));
+    authService.register(registerModel: registerModel).then((result) {
+      if (mounted) {
+        setState(() {
+          if (result.message!.contains("Successfully")) {
+            final snackBar = SnackBar(
+                backgroundColor: Colors.green,
+                content: Text(
+                  result.message!,
+                  textAlign: TextAlign.center,
+                ));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            // Return homepage after 2 sec
+          } else {
+            print(result.message);
+            final snackBar = SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(
+                  result.message!,
+                  textAlign: TextAlign.center,
+                ));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        });
+      }
+    });
   }
 
   @override

@@ -19,7 +19,26 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   String? responseValue;
-  UserDetail userDetail = UserDetail();
+  UserDetail userDetail = UserDetail(
+      imagePath: "",
+      email: "",
+      id: 0,
+      phoneNumber: "",
+      firstName: "",
+      address: "",
+      animalCount: 0,
+      bullCount: 0,
+      calfCount: 0,
+      city: 0,
+      cowCount: 0,
+      customerCount: 0,
+      district: "",
+      lastName: "",
+      profit: 0,
+      role: " ",
+      sheepCount: 0,
+      totalSales: 0,
+      zipCode: 0);
 
   @override
   void initState() {
@@ -29,12 +48,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> getUserDetail() async {
     var value = await UserService().getUserDetails();
-
-    setState(() {
-      if (value != null) {
+    if (mounted) {
+      setState(() {
         userDetail = value;
-      }
-    });
+      });
+    }
   }
 
   Widget userDetailLabel({text = String}) {
@@ -64,14 +82,18 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(
             height: 40,
           ),
-          ProfileWidget(
-            imagePath:
-                "https://www.wpdurum.com/uploads/thumbs/en-iyi-erkek-profil-resimleri.jpg",
-            onClicked: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const Text("") //EditProfilePage()),
-                  ));
-            },
+          SizedBox(
+            height: 120,
+            child: ProfileWidget(
+              imagePath:
+                  "http://localhost:5000/uploads/" + userDetail.imagePath!,
+              context: context,
+              onClicked: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const Text("") //EditProfilePage()),
+                    ));
+              },
+            ),
           ),
           const SizedBox(height: 24),
           buildName(userDetail),
@@ -80,9 +102,10 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 24),
           NumbersWidget(
               cityName,
-              userDetail.district,
+              userDetail.district ?? "",
               userDetail.role?.replaceFirst(
-                  userDetail.role![0], userDetail.role![0].toUpperCase())),
+                      userDetail.role![0], userDetail.role![0].toUpperCase()) ??
+                  ""),
           const SizedBox(height: 48),
           buildAbout(userDetail),
         ],
@@ -145,7 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                              title: Text("Do you want to logout?"),
+                              title: const Text("Do you want to logout?"),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () =>
