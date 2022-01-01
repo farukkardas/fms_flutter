@@ -2,6 +2,7 @@ import 'dart:core';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/guards/auth_guard.dart';
+import 'package:fms_flutter/screens/basket/basket.dart';
 import 'package:fms_flutter/screens/buy_products/buy_product.dart';
 import 'package:fms_flutter/screens/profile/profile.dart';
 import 'package:fms_flutter/screens/welcome/welcome_screen.dart';
@@ -20,21 +21,16 @@ class _HomePageState extends State<Homepage> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
     const BuyProduct(),
-    const Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-    ProfilePage(),
+    const Basket(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
-
-    if(mounted){
+    if (mounted) {
       setState(() {
         _selectedIndex = index;
       });
     }
-
   }
 
   bool isAuth = false;

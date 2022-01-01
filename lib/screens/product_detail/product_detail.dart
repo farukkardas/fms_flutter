@@ -11,7 +11,7 @@ class ProductDetail extends StatefulWidget {
   final Product product;
 
   @override
-  _ProductDetailState createState() => _ProductDetailState();
+  State<ProductDetail> createState() => _ProductDetailState();
 }
 
 class _ProductDetailState extends State<ProductDetail> {
@@ -39,18 +39,31 @@ class _ProductDetailState extends State<ProductDetail> {
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
           ),
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.green),
+            backgroundColor: MaterialStateProperty.all(Colors.orange),
             elevation: MaterialStateProperty.all(2),
           ),
           onPressed: ()  async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             productInBasket.userId = prefs.getString('id');
             productInBasket.productId = widget.product.id.toString();
-            BasketService().addToBasket(productInBasket: productInBasket);
-            setState(()  {
+            BasketService().addToBasket(productInBasket: productInBasket).then((value) {
+              final snackBar = SnackBar(
+                  backgroundColor: Colors.green,
+                  content: Text(
+                    value.message!,
+                    textAlign: TextAlign.center,
+                  ));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }).catchError((onError) {
+              const snackBar = SnackBar(
+                  backgroundColor: Colors.red,
+                  content: Text(
+                    "Error occurred when try to add basket!",
+                    textAlign: TextAlign.center,
+                  ));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
             });
-
 
           }),
     );
