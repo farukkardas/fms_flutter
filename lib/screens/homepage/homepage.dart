@@ -9,14 +9,15 @@ import 'package:fms_flutter/screens/welcome/welcome_screen.dart';
 import 'package:fms_flutter/services/auth_service.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({Key? key}) : super(key: key);
+  int selectedIndex = 0;
 
+  Homepage({Key? key,required this.selectedIndex}) : super(key: key);
   @override
   State<Homepage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<Homepage> {
-  int _selectedIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final List<Widget> _widgetOptions = <Widget>[
@@ -28,7 +29,7 @@ class _HomePageState extends State<Homepage> {
   void _onItemTapped(int index) {
     if (mounted) {
       setState(() {
-        _selectedIndex = index;
+        widget.selectedIndex = index;
       });
     }
   }
@@ -61,7 +62,7 @@ class _HomePageState extends State<Homepage> {
             content: Text("Tap back again to exit app"),
           ),
           child: Center(
-            child: _widgetOptions.elementAt(_selectedIndex),
+            child: _widgetOptions.elementAt(widget.selectedIndex),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -82,7 +83,7 @@ class _HomePageState extends State<Homepage> {
               backgroundColor: Colors.pink,
             ),
           ],
-          currentIndex: _selectedIndex,
+          currentIndex: widget.selectedIndex,
           selectedItemColor: Colors.amber[800],
           onTap: _onItemTapped,
         ),

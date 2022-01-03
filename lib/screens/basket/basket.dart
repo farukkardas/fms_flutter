@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fms_flutter/models/basket/delete_basket_product.dart';
 import 'package:fms_flutter/models/basket/get_basket_product.dart';
 import 'package:fms_flutter/services/basket_service.dart';
+import 'package:intl/intl.dart';
 
 class Basket extends StatefulWidget {
   const Basket({Key? key}) : super(key: key);
@@ -54,7 +55,7 @@ class _Basket extends State<Basket> {
                       ]),
                     ),
                   ),
-                  const SizedBox(width: 80),
+                  const SizedBox(width: 50),
                   SizedBox(
                     width: 200,
                     height: 50,
@@ -195,10 +196,11 @@ class _Basket extends State<Basket> {
   }
 
   String calculatePrice() {
+    final formatCurrency = NumberFormat.simpleCurrency(locale: "tr_TR");
     num lastPrice = 0;
     for (final i in productList) {
       lastPrice += i.productPrice!;
     }
-    return lastPrice.toString();
+    return formatCurrency.format(lastPrice);
   }
 }

@@ -38,7 +38,9 @@ class Body extends StatelessWidget {
                         {
                           Navigator.pushAndRemoveUntil(context,
                               MaterialPageRoute(builder: (context) {
-                            return const Homepage();
+                            return Homepage(
+                              selectedIndex: 0,
+                            );
                           }), (route) => false)
                         }
                       else
@@ -62,7 +64,9 @@ class Body extends StatelessWidget {
                         {
                           Navigator.pushAndRemoveUntil(context,
                               MaterialPageRoute(builder: (context) {
-                            return const Homepage();
+                            return Homepage(
+                              selectedIndex: 0,
+                            );
                           }), (route) => false)
                         }
                       else
@@ -78,5 +82,4 @@ class Body extends StatelessWidget {
       ),
     ));
   }
-
 }

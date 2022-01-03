@@ -132,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
         text: 'Go to shopping!',
         onClicked: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const Homepage();
+            return  Homepage(selectedIndex: 0,);
           }));
         },
       );

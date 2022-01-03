@@ -30,8 +30,8 @@ class FirstScreen extends StatelessWidget {
           if (jwt == null) {
             return const MaterialApp(home: WelcomeScreen());
           } else {
-            return const MaterialApp(
-              home: Homepage(),
+            return  MaterialApp(
+              home: Homepage(selectedIndex: 0),
             );
           }
         }

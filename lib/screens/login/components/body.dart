@@ -30,14 +30,14 @@ class Body extends State<LoginScreen> {
                 {
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (context) {
-                    return const Homepage();
+                    return  Homepage(selectedIndex: 0,);
                   }), (route) => false)
                 }
             }));
     FutureOr Function()? returnHomePage() {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const Homepage()),
+        MaterialPageRoute(builder: (context) =>  Homepage(selectedIndex: 0)),
         (Route<dynamic> route) => false,
       );
     }
@@ -48,7 +48,6 @@ class Body extends State<LoginScreen> {
             if (mounted)
               {
                 setState(() {
-                  print(result.success);
                   // if success
                   if (result.success == true) {
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();

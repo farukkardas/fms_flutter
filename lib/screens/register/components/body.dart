@@ -21,7 +21,7 @@ class Body extends State<RegisterScreen> {
   FutureOr Function()? returnHomePage() {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const Homepage()),
+      MaterialPageRoute(builder: (context) =>  Homepage(selectedIndex: 0)),
       (Route<dynamic> route) => false,
     );
   }
@@ -67,7 +67,7 @@ class Body extends State<RegisterScreen> {
                 {
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (context) {
-                    return const Homepage();
+                    return  Homepage(selectedIndex: 0);
                   }), (route) => false)
                 }
             }));
