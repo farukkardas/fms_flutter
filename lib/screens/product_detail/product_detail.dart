@@ -47,8 +47,14 @@ class _ProductDetailState extends State<ProductDetail> {
             productInBasket.userId = prefs.getString('id');
             productInBasket.productId = widget.product.id.toString();
             BasketService().addToBasket(productInBasket: productInBasket).then((value) {
+              bool isSuccess = true;
+
+              if(value.success == false){
+                isSuccess = false;
+              }
+
               final snackBar = SnackBar(
-                  backgroundColor: Colors.green,
+                  backgroundColor: isSuccess ? Colors.green : Colors.red,
                   content: Text(
                     value.message!,
                     textAlign: TextAlign.center,
@@ -61,6 +67,7 @@ class _ProductDetailState extends State<ProductDetail> {
                     "Error occurred when try to add basket!",
                     textAlign: TextAlign.center,
                   ));
+
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
             });
@@ -114,37 +121,14 @@ class _ProductDetailState extends State<ProductDetail> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Ürün Adı: ",
-                      style: TextStyle(
-                          fontSize: 16,
-                          height: 1.5,
-                          fontWeight: FontWeight.bold)),
-                  Text(
-                    widget.product.name ?? "Ürün ismi bulunmadı!",
-                    style: const TextStyle(fontSize: 16, height: 1.5),
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text("Açıklama: ",
+                  const Text("Product Name: ",
                       style: TextStyle(
                           fontSize: 16,
                           height: 1.5,
                           fontWeight: FontWeight.bold)),
                   Flexible(
                     child: Text(
-                      widget.product.description ?? "Açıklama bulunmadı!",
+                      widget.product.name ?? "Product name not found!",
                       style: const TextStyle(fontSize: 16, height: 1.5),
                     ),
                   ),
@@ -162,7 +146,32 @@ class _ProductDetailState extends State<ProductDetail> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Fiyat: ",
+                  const Text("Description: ",
+                      style: TextStyle(
+                          fontSize: 16,
+                          height: 1.5,
+                          fontWeight: FontWeight.bold)),
+                  Flexible(
+                    child: Text(
+                      widget.product.description ?? "Description not found!",
+                      style: const TextStyle(fontSize: 16, height: 1.5),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text("Price: ",
                       style: TextStyle(
                           fontSize: 16,
                           height: 1.5,
@@ -187,7 +196,7 @@ class _ProductDetailState extends State<ProductDetail> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text("Ürün ID: ",
+                  const Text("Product ID: ",
                       style: TextStyle(
                           fontSize: 16,
                           height: 1.5,

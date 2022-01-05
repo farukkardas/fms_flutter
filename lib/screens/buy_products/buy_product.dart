@@ -22,6 +22,8 @@ class _BuyProduct extends State<BuyProduct> {
 
   String searchValue = "";
 
+  bool isVisible = false;
+
   @override
   Widget build(BuildContext context) {
     ProductService().getAllProducts().then((value) => {
@@ -29,19 +31,6 @@ class _BuyProduct extends State<BuyProduct> {
           if (mounted)
             {
               setState(() {
-                // if (activeMenu == 0 && searchValue.isEmpty) {
-                //   filteredList = value.data!;
-                // }
-                // if (searchValue.isNotEmpty) {
-                //   filteredList = value.data!;
-                //   var products = filteredList
-                //       .where((element) => element.name!
-                //           .toLowerCase()
-                //           .contains(searchValue.toLowerCase()))
-                //       .toList();
-                //   filteredList = products;
-                // }
-
                 if (activeMenu == 0) {
                   filteredList = value.data!;
                   if (searchValue.isNotEmpty) {
@@ -58,12 +47,14 @@ class _BuyProduct extends State<BuyProduct> {
                   for (final rawValue in value.data!) {
                     if (rawValue.categoryId == activeMenu) {
                       filteredList.add(rawValue);
-                      if(searchValue.isNotEmpty){
+                      if (searchValue.isNotEmpty) {
                         filteredList = value.data!;
                         var products = filteredList
-                            .where((element) => element.name!
-                            .toLowerCase()
-                            .contains(searchValue.toLowerCase()) && element.categoryId == activeMenu)
+                            .where((element) =>
+                                element.name!
+                                    .toLowerCase()
+                                    .contains(searchValue.toLowerCase()) &&
+                                element.categoryId == activeMenu)
                             .toList();
                         filteredList = products;
                       }
@@ -81,13 +72,8 @@ class _BuyProduct extends State<BuyProduct> {
   Widget cardBody() {
     return ListView(
       children: <Widget>[
-        TextField(
-          onChanged: (value) => searchValue = value,
-          decoration: const InputDecoration(
-              labelText: 'Search', suffixIcon: Icon(Icons.search)),
-        ),
         Padding(
-          padding: const EdgeInsets.only(left: 25.0, right: 25, top: 25.0),
+          padding: const EdgeInsets.all(25),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -99,6 +85,12 @@ class _BuyProduct extends State<BuyProduct> {
                 children: [
                   InkWell(
                       onTap: () {
+                        isVisible = !isVisible;
+                      },
+                      child: const Icon(Icons.search)),
+                  const SizedBox(width: 20,),
+                  InkWell(
+                      onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return Homepage(
@@ -106,10 +98,32 @@ class _BuyProduct extends State<BuyProduct> {
                           );
                         }));
                       },
-                      child: Icon(Icons.shopping_cart))
+                      child: const Icon(Icons.shopping_cart)),
                 ],
               )
             ],
+          ),
+        ),
+        Visibility(
+          visible: isVisible,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            child: TextField(
+              onChanged: (value) => searchValue = value,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black)),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black)),
+                  labelText: 'Search..',
+                  labelStyle: TextStyle(color: Colors.black),
+                  suffixIcon: Icon(
+                    Icons.search,
+                    color: Colors.black,
+                  )),
+            ),
           ),
         ),
         const SizedBox(
