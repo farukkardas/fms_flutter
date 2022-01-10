@@ -34,14 +34,21 @@ class CheckoutService {
         responseModel.message = decodedJson['message'];
         return responseModel;
       case 400:
-       var decodedJson = json.decode(response.body);
-       print(decodedJson);
-       var errors = decodedJson['Errors'];
-       for(final i in errors){
-         responseModel.message = i['ErrorMessage'];
-       }
-       responseModel.success = false;
-       return responseModel;
+        var decodedJson = json.decode(response.body);
+        if(decodedJson['message'].toString().isNotEmpty){
+          responseModel.message = decodedJson['message'];
+          responseModel.success = false;
+          return responseModel;
+        }
+        else{
+          var errors = decodedJson['Errors'];
+          for(final i in errors){
+            responseModel.message = i['ErrorMessage'];
+          }
+          responseModel.success = false;
+          return responseModel;
+        }
+
 
       case 500:
         var decodedJson = json.decode(response.body);

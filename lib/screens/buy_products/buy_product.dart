@@ -24,6 +24,8 @@ class _BuyProduct extends State<BuyProduct> {
 
   bool isVisible = false;
 
+  bool isEmpty = false;
+
   @override
   Widget build(BuildContext context) {
     ProductService().getAllProducts().then((value) => {
@@ -61,7 +63,8 @@ class _BuyProduct extends State<BuyProduct> {
                     }
                   }
                 }
-              })
+              }),
+              productList.isEmpty ? isEmpty = true : isEmpty = false
             }
         });
     return Scaffold(
@@ -234,7 +237,8 @@ class _BuyProduct extends State<BuyProduct> {
         }),
       );
     }
-    return Wrap(
+    else if(isEmpty) {
+      return Wrap(
       children: <Widget>[
         const Padding(
             padding: EdgeInsets.only(top: 80, bottom: 80),
@@ -251,5 +255,18 @@ class _BuyProduct extends State<BuyProduct> {
         )),
       ],
     );
+    }
+
+    return Wrap(children:  <Widget>[
+      Padding(
+          padding: const  EdgeInsets.all(60),
+          child: Center(
+              child: Image.asset("assets/icons/loading-buffering.gif"))),
+      const SizedBox(height: 10,),
+      const Padding(
+          padding: EdgeInsets.all(60),
+          child: Center(
+              child: Text("Loading..")))
+    ]);
   }
 }

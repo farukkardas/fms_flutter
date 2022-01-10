@@ -1,6 +1,6 @@
 class Cities {
   static const cities = [
-    '',
+    'Not Found..',
     'Adana',
     'Adıyaman',
     'Afyon',

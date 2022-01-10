@@ -4,7 +4,9 @@ class NumbersWidget extends StatelessWidget {
   String? role;
   String? city;
   String? district;
-  NumbersWidget(this.city,this.district,this.role, {Key? key}) : super(key: key);
+
+  NumbersWidget(this.city, this.district, this.role, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) => Column(
@@ -18,14 +20,14 @@ class NumbersWidget extends StatelessWidget {
         ],
       );
 
-  Widget buildDivider() => Container(
+  Widget buildDivider() => const SizedBox(
         height: 24,
         child: VerticalDivider(),
       );
 
   Widget buildButton(BuildContext context, String value, String text) =>
       MaterialButton(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         onPressed: () {},
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         child: Column(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/models/basket/delete_basket_product.dart';
 import 'package:fms_flutter/models/basket/get_basket_product.dart';
@@ -16,20 +18,31 @@ class Basket extends StatefulWidget {
 class _Basket extends State<Basket> {
   List<BasketProduct> productList = <BasketProduct>[];
 
+  bool isEmpty = false;
+
   @override
   Widget build(BuildContext context) {
-    BasketService().getBasketProducts().then((value) {
-      if (mounted) {
-        setState(() {
-          productList = value.data!;
-        });
-      }
-    });
+    getBasketProducts();
     return Scaffold(
       appBar: basketAppBar(context),
       body: buildBody(context),
       bottomSheet: bottomButton(),
     );
+  }
+
+  getBasketProducts() {
+    BasketService().getBasketProducts().then((value) {
+      if (mounted) {
+        setState(() {
+          productList = value.data!;
+          if (productList.isEmpty) {
+            isEmpty = true;
+          }
+        });
+      }
+    }).catchError((onError) {
+      isEmpty = true;
+    });
   }
 
   DeleteBasketProduct deleteBasketProduct = DeleteBasketProduct();
@@ -40,58 +53,60 @@ class _Basket extends State<Basket> {
         height: 60,
         width: size.width,
         child: Container(
-          child: Column(
+          child: bottomComponents(),
+        ));
+  }
+
+  bottomComponents() {
+    if (productList.isNotEmpty) {
+      return Column(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Text.rich(
-                      TextSpan(text: "Total Price:\n", children: [
-                        TextSpan(
-                            text: calculatePrice(),
-                            style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w600))
-                      ]),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Text.rich(
+                  TextSpan(text: "Total Price:\n", children: [
+                    TextSpan(
+                        text: calculatePrice(),
+                        style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600))
+                  ]),
+                ),
+              ),
+              const SizedBox(width: 60),
+              SizedBox(
+                width: 200,
+                height: 50,
+                child: TextButton(
+                    child: Text(
+                      "Checkout " + "(" + productList.length.toString() + ")",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(width: 60),
-                  SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: TextButton(
-                        child: Text(
-                          "Checkout " +
-                              "(" +
-                              productList.length.toString() +
-                              ")",
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.orange),
-                          elevation: MaterialStateProperty.all(2),
-                        ),
-                        onPressed: () {
-                          if (productList.isEmpty) {
-                            return;
-                          }
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const PaymentSelection();
-                          }));
-                        }),
-                  ),
-                ],
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.orange),
+                      elevation: MaterialStateProperty.all(2),
+                    ),
+                    onPressed: () {
+                      if (productList.isEmpty) {
+                        return;
+                      }
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const PaymentSelection();
+                      }));
+                    }),
               ),
             ],
           ),
-        ));
+        ],
+      );
+    }
   }
 
   MultiChildRenderObjectWidget buildBody(BuildContext context) {
@@ -185,49 +200,60 @@ class _Basket extends State<Basket> {
           ], mainAxisAlignment: MainAxisAlignment.spaceBetween)),
         );
       }));
-    }
-    return Wrap(
-      children: <Widget>[
-        const Padding(
-            padding: EdgeInsets.only(top: 80, bottom: 60),
-            child: Center(
-                child: Text(
-              "No product found in your basket.",
-              style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
-            ))),
-        Center(
-            child: Image.asset(
-          "assets/icons/empty_basket.png",
-          height: 150,
-          width: 150,
-        )),
-        const SizedBox(
-          height: 20,
-        ),
-        SizedBox(height: 100,width: MediaQuery.of(context).size.width * 0.7,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 145, top: 50),
-            child: TextButton(
-                child: const Text(
-                  "Go to Shopping",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold),
-                ),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.orange),
-                  elevation: MaterialStateProperty.all(2),
-                ),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return Homepage(selectedIndex: 0);
-                  }));
-                }),
+    } else if (isEmpty) {
+      return Column(
+        children: <Widget>[
+          const Padding(
+              padding: EdgeInsets.all(60),
+              child: Center(
+                  child: Text(
+                "No product found in your basket.",
+                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 16),
+              ))),
+          Center(
+              child: Image.asset(
+            "assets/icons/empty_basket.png",
+            height: 150,
+            width: 150,
+          )),
+          const SizedBox(
+            height: 20,
           ),
-        ),
-      ],
-    );
+          SizedBox(
+            height: 100,
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: TextButton(
+                  child: const Text(
+                    "Go to Shopping",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.orange),
+                    elevation: MaterialStateProperty.all(2),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return Homepage(selectedIndex: 0);
+                    }));
+                  }),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Wrap(children:  <Widget>[
+      Padding(
+          padding: const  EdgeInsets.all(60),
+          child: Center(
+              child: Image.asset("assets/icons/loading-buffering.gif")))
+    ]);
   }
 
   AppBar basketAppBar(BuildContext context) {

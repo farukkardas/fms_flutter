@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileWidget extends StatelessWidget {
-  final String imagePath;
+  String? imagePath;
+  String? dropdownValue;
   final bool isEdit;
-  final VoidCallback onClicked;
+  final Function? onClicked;
   final context;
-  const ProfileWidget({
+
+  ProfileWidget({
     Key? key,
-    required this.imagePath,
+    this.imagePath,
     this.isEdit = false,
-    required this.onClicked, required this.context,
+    required this.onClicked,
+    required this.context,
   }) : super(key: key);
 
   @override
@@ -36,8 +39,10 @@ class ProfileWidget extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: CachedNetworkImage(
-          imageUrl: imagePath,
-          placeholder: (context,url) => const CircularProgressIndicator(color: Colors.red,),
+          imageUrl: imagePath ?? "images/default.png",
+          placeholder: (context, url) => const CircularProgressIndicator(
+            color: Colors.red,
+          ),
         ),
       ),
     );

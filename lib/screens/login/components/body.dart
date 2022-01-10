@@ -30,14 +30,16 @@ class Body extends State<LoginScreen> {
                 {
                   Navigator.pushAndRemoveUntil(context,
                       MaterialPageRoute(builder: (context) {
-                    return  Homepage(selectedIndex: 0,);
+                    return Homepage(
+                      selectedIndex: 0,
+                    );
                   }), (route) => false)
                 }
             }));
     FutureOr Function()? returnHomePage() {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) =>  Homepage(selectedIndex: 0)),
+        MaterialPageRoute(builder: (context) => Homepage(selectedIndex: 0)),
         (Route<dynamic> route) => false,
       );
     }
@@ -71,7 +73,16 @@ class Body extends State<LoginScreen> {
                   }
                 })
               }
-          });
+          }).catchError((onError) {
+        const snackBar = SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              "Connection problem when try to login!",
+              textAlign: TextAlign.center,
+            ));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      });
     }
 
     return Scaffold(
