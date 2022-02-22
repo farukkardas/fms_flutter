@@ -3,6 +3,7 @@ import 'package:fms_flutter/models/auth/login.dart';
 import 'package:fms_flutter/models/auth/register_model.dart';
 import 'package:fms_flutter/models/response_models/response_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 
@@ -27,18 +28,22 @@ class AuthService {
         //Parse JSON Data
         final jsonData = jsonArray['data'] as Map;
         //Operation Claims
-        final jsonRole = jsonData['operationClaims'] as List;
 
         // set role in storage
-        for (var element in jsonRole) {
-          pref.setString("role", element['name']);
-        }
+        Map<String, dynamic> jwtDecode = Jwt.parseJwt(jsonData['token']);
+
+        final roleKey = jwtDecode.keys.elementAt(3);
+        final roleValue = jwtDecode[roleKey];
+
+        final idKey = jwtDecode.keys.elementAt(0);
+        final idValue = jwtDecode[idKey];
 
         // set values in sharedprefs
+        pref.setString("role", roleValue);
         pref.setString("jwt", jsonData['token'].toString());
         pref.setString("expiration", jsonData['expiration'].toString());
         pref.setString("securityKey", jsonData['securityKey'].toString());
-        pref.setString("id", jsonData['id'].toString());
+        pref.setString("id", idValue);
         pref.setBool("isAuth", true);
         model.message = jsonArray['message'];
         model.success = true;

@@ -6,7 +6,6 @@ import 'package:fms_flutter/components/profile_widget.dart';
 import 'package:fms_flutter/constants/cities.dart';
 import 'package:fms_flutter/models/user/user_detail.dart';
 import 'package:fms_flutter/screens/customer-orders/customer-orders.dart';
-import 'package:fms_flutter/screens/homepage/homepage.dart';
 import 'package:fms_flutter/screens/welcome/welcome_screen.dart';
 import 'package:fms_flutter/services/auth_service.dart';
 import 'package:fms_flutter/services/user_service.dart';
@@ -52,11 +51,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> getUserDetail() async {
     var value = await UserService().getUserDetails();
-    if (mounted) {
-      setState(() {
-        userDetail = value;
-      });
-    }
+if(mounted){
+  setState(() {
+    userDetail = value;
+  });
+}
+
+
   }
 
   Widget userDetailLabel({text = String}) {
@@ -142,11 +143,11 @@ class _ProfilePageState extends State<ProfilePage> {
         color: Colors.lightBlueAccent,
         text: 'My orders',
         onClicked: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const CustomerOrders();
-          }));
-        },
-      );
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) {
+                return const CustomerOrders();
+              }));
+        });
 
   List<DropdownMenuItem<String>> get dropdownItems {
     var menuItems = Cities.cities.map<DropdownMenuItem<String>>((String value) {

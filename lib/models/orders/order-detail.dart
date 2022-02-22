@@ -31,7 +31,7 @@ class OrderDetail {
       this.deliveryDistrict,
       this.deliveryAddress,
       this.boughtDate,
-      this.status,
+        this.status,
       this.deliveryNo});
 
   factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(

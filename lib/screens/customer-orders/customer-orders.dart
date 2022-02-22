@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fms_flutter/constants/order-status.dart';
 import 'package:fms_flutter/models/orders/order-detail.dart';
-import 'package:fms_flutter/screens/product_detail/product_detail.dart';
 import 'package:fms_flutter/services/order_service.dart';
 
 class CustomerOrders extends StatefulWidget {
@@ -95,7 +94,7 @@ class _CustomerOrders extends State<CustomerOrders> {
                       padding: const EdgeInsets.only(left: 10,right: 10),
                       child: SizedBox(
                           child: Image.asset( "assets/icons/" +
-                              OrderStatus.status[orderDetails[index].status!]
+                              OrderStatus.status[orderDetails[index].status ?? 0]
                                   .toString()
                                   .toLowerCase() +
                               ".png")
@@ -114,9 +113,11 @@ class _CustomerOrders extends State<CustomerOrders> {
 
   getUserOrders() {
     OrderService().getUserOrderDetail().then((value) {
-      setState(() {
-        orderDetails = value.data!;
-      });
+      if(mounted){
+        setState(() {
+          orderDetails = value.data!;
+        });
+      }
     });
   }
 }
